@@ -10,7 +10,7 @@ return {
     fold = { enable = true },
   },
   config = function(_, opts)
-    require("nvim-treesitter.configs").setup(opts)
+    require("nvim-treesitter.config").setup(opts)
     -- Enable treesitter-based folding
     vim.opt.foldmethod = "expr"
     vim.opt.foldexpr = "nvim_treesitter#foldexpr()"
@@ -18,4 +18,3 @@ return {
     vim.opt.foldlevel = 99 -- Open all folds by default
   end
 }
-

@@ -1,0 +1,437 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Neovim Keymaps</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --bg: #f7f8fc;
+      --panel: #ffffff;
+      --panel-2: #f3f6ff;
+      --text: #162033;
+      --muted: #5b667a;
+      --line: rgba(67, 84, 144, 0.16);
+      --accent: #4f46e5;
+      --accent-2: #0f9d58;
+      --warn: #d97706;
+      --danger: #dc2626;
+      --code: #1e3a8a;
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(79, 70, 229, 0.18), transparent 22%),
+        radial-gradient(circle at top right, rgba(15, 157, 88, 0.14), transparent 20%),
+        linear-gradient(180deg, #eef4ff 0%, #f8fbff 42%, #ffffff 100%);
+      color: var(--text);
+      line-height: 1.5;
+      min-height: 100vh;
+    }
+
+    .wrap { max-width: 1240px; margin: 0 auto; padding: 32px 20px 64px; }
+    .hero {
+      display: grid;
+      gap: 12px;
+      padding: 24px;
+      background: linear-gradient(180deg, #ffffff 0%, #f5f8ff 100%);
+      border: 1px solid var(--line);
+      border-radius: 20px;
+      box-shadow: 0 18px 50px rgba(79, 70, 229, 0.10);
+    }
+    .hero h1 { margin: 0; font-size: clamp(2rem, 4vw, 3rem); letter-spacing: -0.03em; color: #0f172a; }
+    .hero p { margin: 0; color: var(--muted); max-width: 72ch; }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 4px;
+    }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #f8fbff;
+      color: var(--text);
+      font-size: 0.92rem;
+    }
+    .pill strong {
+      color: #0f172a;
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: 999px;
+      background: #dbeafe;
+      border: 1px solid rgba(59, 130, 246, 0.18);
+    }
+
+    .leader-chip {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 0 8px;
+      margin-right: 4px;
+      border-radius: 999px;
+      background: #dbeafe;
+      color: #0f172a;
+      border: 1px solid rgba(59, 130, 246, 0.18);
+      font-weight: 700;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 18px;
+      margin-top: 20px;
+    }
+    .card {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 18px;
+    }
+    .card h2, .card h3 { margin: 0 0 12px; }
+    .card h2 { font-size: 1.1rem; }
+    .card h3 { font-size: 1rem; color: #fff; }
+    .muted { color: var(--muted); }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+    }
+    .stat {
+      padding: 14px;
+      border-radius: 14px;
+      background: var(--panel-2);
+      border: 1px solid var(--line);
+    }
+    .stat .label { color: var(--muted); font-size: 0.9rem; }
+    .stat .value { font-size: 1.5rem; font-weight: 700; margin-top: 4px; }
+
+    .section {
+      margin-top: 18px;
+      padding: 18px;
+      border-radius: 18px;
+      background: var(--panel);
+      border: 1px solid var(--line);
+    }
+    .section h2 { margin-top: 0; }
+    .section-head {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: baseline;
+      margin-bottom: 14px;
+    }
+    .section-head small { color: var(--muted); }
+
+    .table-wrap {
+      overflow-x: auto;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      background: #fff;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 720px;
+    }
+    thead th {
+      text-align: left;
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--muted);
+      padding: 14px 16px;
+      border-bottom: 1px solid var(--line);
+      background: #f1f5ff;
+    }
+    tbody td {
+      padding: 12px 16px;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.10);
+      vertical-align: top;
+    }
+    tbody tr:hover { background: rgba(79, 70, 229, 0.06); }
+
+    .key {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 5px 10px;
+      border-radius: 10px;
+      background: #e0e7ff;
+      border: 1px solid rgba(79, 70, 229, 0.18);
+      color: #0f172a;
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+      font-size: 0.92rem;
+      white-space: nowrap;
+    }
+    .tag {
+      display: inline-block;
+      margin-left: 8px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      font-size: 0.75rem;
+      border: 1px solid var(--line);
+      color: var(--muted);
+    }
+    .tag.conflict { color: #b91c1c; border-color: rgba(239, 68, 68, 0.24); background: rgba(239, 68, 68, 0.08); }
+    .tag.primary { color: #166534; border-color: rgba(34, 197, 94, 0.24); background: rgba(34, 197, 94, 0.08); }
+
+    ul { margin: 0; padding-left: 20px; color: var(--text); }
+    li { margin: 6px 0; }
+    .footer {
+      margin-top: 18px;
+      color: #334155;
+      font-size: 0.92rem;
+    }
+
+    @media (max-width: 980px) {
+      .grid { grid-template-columns: 1fr; }
+      .stats { grid-template-columns: 1fr; }
+    }
+
+    @media (max-width: 760px) {
+      .wrap { padding: 18px 12px 44px; }
+      .hero, .card, .section { border-radius: 16px; }
+      table { min-width: 0; }
+      thead { display: none; }
+      table, tbody, tr, td { display: block; width: 100%; }
+      tbody tr { border-bottom: 1px solid var(--line); }
+      tbody td {
+        border-bottom: 0;
+        padding: 10px 16px;
+      }
+      tbody td::before {
+        content: attr(data-label);
+        display: block;
+        margin-bottom: 4px;
+        color: #64748b;
+        font-size: 0.78rem;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <section class="hero">
+      <h1>Neovim Keymaps</h1>
+      <p>Standalone cheat sheet generated from your current Lua config. It shows the effective mapping for each key, not every overwritten duplicate.</p>
+      <div class="meta">
+        <span class="pill"><strong>Leader</strong> Space</span>
+        <span class="pill"><strong>Explorer</strong> mini.files</span>
+        <span class="pill"><strong>LSP</strong> vim.lsp / Snacks</span>
+      </div>
+    </section>
+
+    <div class="grid">
+      <section class="card">
+        <h2>Quick Stats</h2>
+        <div class="stats">
+          <div class="stat"><div class="label">Total mappings</div><div class="value">61+</div></div>
+          <div class="stat"><div class="label">Conflicting keys</div><div class="value">11</div></div>
+          <div class="stat"><div class="label">Explorer</div><div class="value">mini.files</div></div>
+        </div>
+      </section>
+
+      <section class="card">
+        <h2>How To Read This</h2>
+        <ul class="muted">
+          <li>This page shows the active mapping for each key.</li>
+          <li>When a key is declared more than once in your config, the later-loaded mapping wins.</li>
+          <li>Use this as the current working keymap sheet.</li>
+        </ul>
+      </section>
+    </div>
+
+    <section class="section">
+      <div class="section-head">
+        <h2>Core / Window / Buffer</h2>
+        <small>Defined in <code>lua/keymaps.lua</code> and <code>lua/plugins/bufferline.lua</code></small>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Key</th><th>Action</th><th>Source</th></tr></thead>
+          <tbody>
+            <tr><td data-label="Key"><span class="key">&lt;A-j&gt;</span></td><td data-label="Action">Move line down</td><td data-label="Source">lua/keymaps.lua</td></tr>
+            <tr><td data-label="Key"><span class="key">&lt;A-k&gt;</span></td><td data-label="Action">Move line up</td><td data-label="Source">lua/keymaps.lua</td></tr>
+            <tr><td data-label="Key"><span class="key">h</span></td><td data-label="Action">Window left</td><td data-label="Source">lua/keymaps.lua</td></tr>
+            <tr><td data-label="Key"><span class="key">j</span></td><td data-label="Action">Window down</td><td data-label="Source">lua/keymaps.lua</td></tr>
+            <tr><td data-label="Key"><span class="key">k</span></td><td data-label="Action">Window up</td><td data-label="Source">lua/keymaps.lua</td></tr>
+            <tr><td data-label="Key"><span class="key">l</span></td><td data-label="Action">Window right</td><td data-label="Source">lua/keymaps.lua</td></tr>
+            <tr><td data-label="Key"><span class="key">&lt;Tab&gt;</span></td><td data-label="Action">Next buffer</td><td data-label="Source">lua/keymaps.lua</td></tr>
+            <tr><td data-label="Key"><span class="key">&lt;S-Tab&gt;</span></td><td data-label="Action">Previous buffer</td><td data-label="Source">lua/keymaps.lua</td></tr>
+            <tr><td data-label="Key"><span class="key">&lt;leader&gt;q</span></td><td data-label="Action">Quit window</td><td data-label="Source">lua/keymaps.lua</td></tr>
+            <tr><td data-label="Key"><span class="key">&lt;leader&gt;w</span></td><td data-label="Action">Save file</td><td data-label="Source">lua/keymaps.lua</td></tr>
+            <tr><td data-label="Key"><span class="key">&lt;leader&gt;sv</span></td><td data-label="Action">Vertical split</td><td data-label="Source">lua/keymaps.lua</td></tr>
+            <tr><td data-label="Key"><span class="key">&lt;leader&gt;sh</span></td><td data-label="Action">Horizontal split</td><td data-label="Source">lua/keymaps.lua</td></tr>
+            <tr><td data-label="Key"><span class="key">&lt;leader&gt;bd</span></td><td data-label="Action">Delete current buffer</td><td data-label="Source">lua/keymaps.lua</td></tr>
+            <tr><td data-label="Key"><span class="key">&lt;C-X&gt;</span></td><td data-label="Action">Delete current buffer</td><td data-label="Source">lua/plugins/bufferline.lua</td></tr>
+            <tr><td data-label="Key"><span class="key">&lt;leader&gt;? / which-key</span></td><td data-label="Action">Show buffer-local keymaps</td><td data-label="Source">lua/plugins/which-key.lua</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <h2>Explorer</h2>
+        <small>Defined in <code>lua/plugins/mini-files.lua</code></small>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Key</th><th>Action</th><th>Source</th></tr></thead>
+          <tbody>
+            <tr><td data-label="Key"><span class="key">&lt;leader&gt;e</span></td><td data-label="Action">Open MiniFiles</td><td data-label="Source">lua/plugins/mini-files.lua</td></tr>
+            <tr><td data-label="Key"><span class="key">&lt;leader&gt;.</span></td><td data-label="Action">Toggle dotfiles</td><td data-label="Source">lua/plugins/mini-files.lua</td></tr>
+            <tr><td data-label="Key"><span class="key">&lt;leader&gt;u</span></td><td data-label="Action">Go up one directory</td><td data-label="Source">lua/plugins/mini-files.lua</td></tr>
+            <tr><td data-label="Key"><span class="key">&lt;leader&gt;r</span></td><td data-label="Action">Refresh explorer</td><td data-label="Source">lua/plugins/mini-files.lua</td></tr>
+            <tr><td data-label="Key"><span class="key">q</span></td><td data-label="Action">Close MiniFiles</td><td data-label="Source">mini.files default mapping</td></tr>
+            <tr><td data-label="Key"><span class="key">&lt;Right&gt;</span></td><td data-label="Action">Go in</td><td data-label="Source">mini.files default mapping</td></tr>
+            <tr><td data-label="Key"><span class="key">&lt;Left&gt;</span></td><td data-label="Action">Go out</td><td data-label="Source">mini.files default mapping</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <h2>Search / Picker</h2>
+        <small>Defined in <code>lua/keymaps.lua</code> and <code>lua/plugins/snacks.lua</code></small>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Key</th><th>Action</th><th>Source</th></tr></thead>
+          <tbody>
+            <tr><td data-label="Key"><span class="key">&lt;leader&gt;ff</span></td><td data-label="Action">Find files</td><td data-label="Source">lua/keymaps.lua</td></tr>
+            <tr><td data-label="Key"><span class="key">&lt;leader&gt;fb</span></td><td data-label="Action">Buffers</td><td data-label="Source">lua/keymaps.lua</td></tr>
+            <tr><td data-label="Key"><span class="key">&lt;leader&gt;fg</span></td><td data-label="Action">Live grep</td><td data-label="Source">lua/keymaps.lua</td></tr>
+            <tr><td data-label="Key"><span class="key">&lt;leader&gt;fh</span></td><td data-label="Action">Help pages</td><td data-label="Source">lua/keymaps.lua</td></tr>
+            <tr><td data-label="Key"><span class="key">&lt;leader&gt;fk</span></td><td data-label="Action">LSP definitions via Telescope</td><td data-label="Source">lua/keymaps.lua</td></tr>
+            <tr><td data-label="Key"><span class="key">&lt;leader&gt;&lt;space&gt;</span></td><td data-label="Action">Smart find files</td><td data-label="Source">snacks.lua</td></tr>
+            <tr><td data-label="Key"><span class="key">&lt;leader&gt;:</span></td><td data-label="Action">Command history</td><td data-label="Source">snacks.lua</td></tr>
+            <tr><td data-label="Key"><span class="key">&lt;leader&gt;n</span></td><td data-label="Action">Notification history</td><td data-label="Source">snacks.lua</td></tr>
+            <tr><td data-label="Key"><span class="key">&lt;leader&gt;fc</span></td><td data-label="Action">Find config files</td><td data-label="Source">snacks.lua</td></tr>
+            <tr><td data-label="Key"><span class="key">&lt;leader&gt;fp</span></td><td data-label="Action">Projects</td><td data-label="Source">snacks.lua</td></tr>
+            <tr><td data-label="Key"><span class="key">&lt;leader&gt;fr</span></td><td data-label="Action">Recent files</td><td data-label="Source">snacks.lua</td></tr>
+            <tr><td data-label="Key"><span class="key">&lt;leader&gt;sg</span></td><td data-label="Action">Grep</td><td data-label="Source">snacks.lua</td></tr>
+            <tr><td data-label="Key"><span class="key">&lt;leader&gt;sw</span></td><td data-label="Action">Grep word / selection</td><td data-label="Source">snacks.lua</td></tr>
+            <tr><td data-label="Key"><span class="key">&lt;leader&gt;sd</span></td><td data-label="Action">Diagnostics</td><td data-label="Source">snacks.lua</td></tr>
+            <tr><td data-label="Key"><span class="key">&lt;leader&gt;sD</span></td><td data-label="Action">Buffer diagnostics</td><td data-label="Source">snacks.lua</td></tr>
+            <tr><td data-label="Key"><span class="key">&lt;leader&gt;s/</span></td><td data-label="Action">Search history</td><td data-label="Source">snacks.lua</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <h2>LSP</h2>
+        <small>Defined in <code>lua/keymaps.lua</code> and <code>lua/plugins/lsp-config.lua</code></small>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Key</th><th>Action</th><th>Source</th></tr></thead>
+          <tbody>
+            <tr><td data-label="Key"><span class="key">gd</span></td><td data-label="Action">Goto definition</td><td data-label="Source">lua/keymaps.lua</td></tr>
+            <tr><td data-label="Key"><span class="key">K</span></td><td data-label="Action">Hover</td><td data-label="Source">lua/keymaps.lua</td></tr>
+            <tr><td data-label="Key"><span class="key">&lt;leader&gt;gd</span></td><td data-label="Action">Definition</td><td data-label="Source">lua/plugins/lsp-config.lua</td></tr>
+            <tr><td data-label="Key"><span class="key">&lt;leader&gt;ca</span></td><td data-label="Action">Code action</td><td data-label="Source">lua/keymaps.lua</td></tr>
+            <tr><td data-label="Key"><span class="key">gD</span></td><td data-label="Action">Goto declaration</td><td data-label="Source">snacks.lua</td></tr>
+            <tr><td data-label="Key"><span class="key">gr</span></td><td data-label="Action">References</td><td data-label="Source">snacks.lua</td></tr>
+            <tr><td data-label="Key"><span class="key">gI</span></td><td data-label="Action">Goto implementation</td><td data-label="Source">snacks.lua</td></tr>
+            <tr><td data-label="Key"><span class="key">gy</span></td><td data-label="Action">Goto type definition</td><td data-label="Source">snacks.lua</td></tr>
+            <tr><td data-label="Key"><span class="key">[d</span></td><td data-label="Action">Previous diagnostic</td><td data-label="Source">lua/keymaps.lua</td></tr>
+            <tr><td data-label="Key"><span class="key">]d</span></td><td data-label="Action">Next diagnostic</td><td data-label="Source">lua/keymaps.lua</td></tr>
+            <tr><td data-label="Key"><span class="key">&lt;leader&gt;rn</span></td><td data-label="Action">Rename symbol</td><td data-label="Source">lua/keymaps.lua</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <h2>Git / Terminal / Tools</h2>
+        <small>Defined in plugin modules</small>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Key</th><th>Action</th><th>Source</th></tr></thead>
+          <tbody>
+            <tr><td data-label="Key"><span class="key">&lt;leader&gt;gp</span></td><td data-label="Action">Preview hunk</td><td data-label="Source">lua/keymaps.lua</td></tr>
+            <tr><td data-label="Key"><span class="key">&lt;leader&gt;gb</span></td><td data-label="Action">Blame</td><td data-label="Source">lua/keymaps.lua</td></tr>
+            <tr><td data-label="Key"><span class="key">&lt;leader&gt;gs</span></td><td data-label="Action">Stage hunk</td><td data-label="Source">lua/keymaps.lua</td></tr>
+            <tr><td data-label="Key"><span class="key">&lt;leader&gt;gr</span></td><td data-label="Action">Reset hunk</td><td data-label="Source">lua/keymaps.lua</td></tr>
+            <tr><td data-label="Key"><span class="key">&lt;leader&gt;gB</span></td><td data-label="Action">Git browse</td><td data-label="Source">snacks.lua</td></tr>
+            <tr><td data-label="Key"><span class="key">&lt;leader&gt;gg</span></td><td data-label="Action">Lazygit</td><td data-label="Source">snacks.lua</td></tr>
+            <tr><td data-label="Key"><span class="key">&lt;leader&gt;tv</span></td><td data-label="Action">Vertical terminal</td><td data-label="Source">lua/plugins/toggleterm.lua</td></tr>
+            <tr><td data-label="Key"><span class="key">&lt;C-t&gt;</span></td><td data-label="Action">Toggle terminal</td><td data-label="Source">lua/plugins/toggleterm.lua</td></tr>
+            <tr><td data-label="Key"><span class="key">&lt;C-\&gt;</span></td><td data-label="Action">Open toggleterm</td><td data-label="Source">lua/plugins/toggleterm.lua</td></tr>
+            <tr><td data-label="Key"><span class="key">&lt;F4&gt;</span></td><td data-label="Action">Format current buffer</td><td data-label="Source">lua/plugins/none-ls.lua</td></tr>
+            <tr><td data-label="Key"><span class="key">&lt;leader&gt;v</span></td><td data-label="Action">Select Python venv</td><td data-label="Source">lua/plugins/venv-selector.lua</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="section-head">
+        <h2>REPL / Flash / Toggles</h2>
+        <small>Defined in <code>lua/plugins/iron.lua</code>, <code>lua/plugins/flash.lua</code>, and <code>lua/plugins/snacks.lua</code></small>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Key</th><th>Action</th><th>Source</th></tr></thead>
+          <tbody>
+            <tr><td data-label="Key"><span class="key">s</span></td><td data-label="Action">Flash jump</td><td data-label="Source">lua/plugins/flash.lua</td></tr>
+            <tr><td data-label="Key"><span class="key">S</span></td><td data-label="Action">Flash treesitter</td><td data-label="Source">lua/plugins/flash.lua</td></tr>
+            <tr><td data-label="Key"><span class="key">r</span></td><td data-label="Action">Flash remote</td><td data-label="Source">lua/plugins/flash.lua</td></tr>
+            <tr><td data-label="Key"><span class="key">R</span></td><td data-label="Action">Flash treesitter search</td><td data-label="Source">flash.lua</td></tr>
+            <tr><td data-label="Key"><span class="key">&lt;C-s&gt;</span></td><td data-label="Action">Toggle flash search</td><td data-label="Source">flash.lua</td></tr>
+            <tr><td data-label="Key"><span class="key">&lt;Space&gt;wf</span></td><td data-label="Action">Send file to REPL</td><td data-label="Source">iron.lua</td></tr>
+            <tr><td data-label="Key"><span class="key">&lt;Space&gt;wl</span></td><td data-label="Action">Send line to REPL</td><td data-label="Source">iron.lua</td></tr>
+            <tr><td data-label="Key"><span class="key">&lt;Space&gt;s&lt;CR&gt;</span></td><td data-label="Action">Send Enter</td><td data-label="Source">iron.lua</td></tr>
+            <tr><td data-label="Key"><span class="key">&lt;Space&gt;s&lt;Space&gt;</span></td><td data-label="Action">Send Ctrl-C</td><td data-label="Source">iron.lua</td></tr>
+            <tr><td data-label="Key"><span class="key">&lt;Space&gt;rc</span></td><td data-label="Action">Send motion / visual selection</td><td data-label="Source">iron.lua</td></tr>
+            <tr><td data-label="Key"><span class="key">&lt;Space&gt;cl</span></td><td data-label="Action">Clear REPL</td><td data-label="Source">iron.lua</td></tr>
+            <tr><td data-label="Key"><span class="key">&lt;Space&gt;rs</span></td><td data-label="Action">Start REPL</td><td data-label="Source">iron.lua</td></tr>
+            <tr><td data-label="Key"><span class="key">&lt;Space&gt;rr</span></td><td data-label="Action">Restart REPL</td><td data-label="Source">iron.lua</td></tr>
+            <tr><td data-label="Key"><span class="key">&lt;Space&gt;rf</span></td><td data-label="Action">Focus REPL</td><td data-label="Source">iron.lua</td></tr>
+            <tr><td data-label="Key"><span class="key">&lt;Space&gt;rh</span></td><td data-label="Action">Hide REPL</td><td data-label="Source">iron.lua</td></tr>
+            <tr><td data-label="Key"><span class="key">&lt;Space&gt;rq</span></td><td data-label="Action">Focus then quit</td><td data-label="Source">iron.lua</td></tr>
+            <tr><td data-label="Key"><span class="key">&lt;leader&gt;z</span></td><td data-label="Action">Zen mode</td><td data-label="Source">snacks.lua</td></tr>
+            <tr><td data-label="Key"><span class="key">&lt;leader&gt;Z</span></td><td data-label="Action">Zoom</td><td data-label="Source">snacks.lua</td></tr>
+            <tr><td data-label="Key"><span class="key">&lt;leader&gt;us</span></td><td data-label="Action">Toggle spell</td><td data-label="Source">snacks.lua</td></tr>
+            <tr><td data-label="Key"><span class="key">&lt;leader&gt;uw</span></td><td data-label="Action">Toggle wrap</td><td data-label="Source">snacks.lua</td></tr>
+            <tr><td data-label="Key"><span class="key">&lt;leader&gt;ud</span></td><td data-label="Action">Toggle diagnostics</td><td data-label="Source">snacks.lua</td></tr>
+            <tr><td data-label="Key"><span class="key">&lt;leader&gt;ul</span></td><td data-label="Action">Toggle line numbers</td><td data-label="Source">snacks.lua</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <div class="footer">
+      Open this file directly in a browser. If you want, I can also generate a version that auto-reads your config files and rebuilds this page.
+    </div>
+  </div>
+  <script>
+    document.querySelectorAll('.key').forEach((el) => {
+      const text = el.textContent || '';
+      if (text.startsWith('<leader>')) {
+        el.innerHTML = `<span class="leader-chip">Space</span> + ${text.slice(8)}`;
+      }
+    });
+  </script>
+</body>
+</html>

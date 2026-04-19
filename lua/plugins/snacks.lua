@@ -65,32 +65,11 @@ return	{
 			},
 			-- find
 			{
-				"<leader>fb",
-				function()
-					Snacks.picker.buffers()
-				end,
-				desc = "Buffers",
-			},
-			{
 				"<leader>fc",
 				function()
 					Snacks.picker.files({ cwd = vim.fn.stdpath("config") })
 				end,
 				desc = "Find Config File",
-			},
-			{
-				"<leader>ff",
-				function()
-					Snacks.picker.files()
-				end,
-				desc = "Find Files",
-			},
-			{
-				"<leader>fg",
-				function()
-					Snacks.picker.git_files()
-				end,
-				desc = "Find Git Files",
 			},
 			{
 				"<leader>fp",
@@ -108,13 +87,6 @@ return	{
 			},
 			-- git
 			{
-				"<leader>gb",
-				function()
-					Snacks.picker.git_branches()
-				end,
-				desc = "Git Branches",
-			},
-			{
 				"<leader>gl",
 				function()
 					Snacks.picker.git_log()
@@ -129,25 +101,11 @@ return	{
 				desc = "Git Log Line",
 			},
 			{
-				"<leader>gs",
-				function()
-					Snacks.picker.git_status()
-				end,
-				desc = "Git Status",
-			},
-			{
 				"<leader>gS",
 				function()
 					Snacks.picker.git_stash()
 				end,
 				desc = "Git Stash",
-			},
-			{
-				"<leader>gd",
-				function()
-					Snacks.picker.git_diff()
-				end,
-				desc = "Git Diff (Hunks)",
 			},
 			{
 				"<leader>gf",
@@ -244,13 +202,6 @@ return	{
 				desc = "Buffer Diagnostics",
 			},
 			{
-				"<leader>sh",
-				function()
-					Snacks.picker.help()
-				end,
-				desc = "Help Pages",
-			},
-			{
 				"<leader>sH",
 				function()
 					Snacks.picker.highlights()
@@ -336,13 +287,6 @@ return	{
 			},
 			-- LSP
 			{
-				"gd",
-				function()
-					Snacks.picker.lsp_definitions()
-				end,
-				desc = "Goto Definition",
-			},
-			{
 				"gD",
 				function()
 					Snacks.picker.lsp_declarations()
@@ -401,32 +345,11 @@ return	{
 				desc = "Toggle Zoom",
 			},
 			{
-				"<leader>.",
-				function()
-					Snacks.scratch()
-				end,
-				desc = "Toggle Scratch Buffer",
-			},
-			{
 				"<leader>S",
 				function()
 					Snacks.scratch.select()
 				end,
 				desc = "Select Scratch Buffer",
-			},
-			{
-				"<leader>n",
-				function()
-					Snacks.notifier.show_history()
-				end,
-				desc = "Notification History",
-			},
-			{
-				"<leader>bd",
-				function()
-					Snacks.bufdelete()
-				end,
-				desc = "Delete Buffer",
 			},
 			{
 				"<leader>cR",
@@ -542,4 +465,3 @@ return	{
 			})
 		end,
 	}
-

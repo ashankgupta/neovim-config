@@ -50,4 +50,3 @@ return {
     end, { desc = "Refresh MiniFiles view" })
   end,
 }
-

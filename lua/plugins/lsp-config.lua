@@ -7,43 +7,33 @@ return {
     end,
   },
   {
-    "williamboman/mason-lspconfig.nvim",
-    lazy = false,
-    opts = {
-      auto_install = true,
-      handlers = {
-        function(server_name)
-            require("lspconfig")[server_name].setup {
-              capabilities = require("coq").lsp_ensure_capabilities( require('cmp_nvim_lsp').default_capabilities()),
-            }
-        end,
-      },
-    },
-  },
-  {
     "neovim/nvim-lspconfig",
     lazy = false,
     config = function()
-      local capabilities = require('cmp_nvim_lsp').default_capabilities()
-      local lspconfig = require("lspconfig")
-      local util = require("lspconfig.util")
+      local capabilities = require("cmp_nvim_lsp").default_capabilities()
 
-      lspconfig.ts_ls.setup({
-        capabilities = capabilities,
-        filetypes = { "javascript", "javascriptreact", "javascript.jsx", "typescript", "typescriptreact", "typescript.tsx"},
-        root_dir = lspconfig.util.root_pattern("package.json", "tsconfig.json", "jsconfig.json", ".git"),
+      local function setup(server, opts)
+        opts = opts or {}
+        opts.capabilities = vim.tbl_deep_extend("force", {}, capabilities, opts.capabilities or {})
+        vim.lsp.config(server, opts)
+        vim.lsp.enable(server)
+      end
+
+      setup("ts_ls", {
+        filetypes = { "javascript", "javascriptreact", "javascript.jsx", "typescript", "typescriptreact", "typescript.tsx" },
+        root_markers = { "package.json", "tsconfig.json", "jsconfig.json", ".git" },
         settings = {
           javascript = {
             inlayHints = {
-		includeInlayParameterNameHints = 'all',
-		includeInlayParameterNameHintsWhenArgumentMatchesName = false,
-		includeInlayFunctionParameterTypeHints = true,
-		includeInlayVariableTypeHints = false,
-		includeInlayPropertyDeclarationTypeHints = true,
-		includeInlayFunctionLikeReturnTypeHints = true,
-		includeInlayEnumMemberValueHints = true,
-		   },
-            checkJs = false, -- Enable better autocompletion for JS
+              includeInlayParameterNameHints = "all",
+              includeInlayParameterNameHintsWhenArgumentMatchesName = false,
+              includeInlayFunctionParameterTypeHints = true,
+              includeInlayVariableTypeHints = false,
+              includeInlayPropertyDeclarationTypeHints = true,
+              includeInlayFunctionLikeReturnTypeHints = true,
+              includeInlayEnumMemberValueHints = true,
+            },
+            checkJs = false,
           },
         },
         init_options = {
@@ -57,24 +47,12 @@ return {
         },
       })
 
-      lspconfig.solargraph.setup({
-        capabilities = capabilities
-      })
-      lspconfig.html.setup({
-        capabilities = capabilities
-      })
-      lspconfig.lua_ls.setup({
-        capabilities = capabilities
-      })
-      lspconfig.pyright.setup({
-        capabilities = capabilities
-      })
-      lspconfig.gopls.setup({
-        capabilities = capabilities
-      })
-
-      lspconfig.rust_analyzer.setup({
-        capabilities = capabilities,
+      setup("solargraph")
+      setup("html")
+      setup("lua_ls")
+      setup("pyright")
+      setup("gopls")
+      setup("rust_analyzer", {
         settings = {
           ["rust-analyzer"] = {
             cargo = {
@@ -84,8 +62,8 @@ return {
               command = "clippy",
             },
             diagnostics = {
-              enable = true
-            }
+              enable = true,
+            },
           },
         },
       })
